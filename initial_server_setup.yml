@@ -1,0 +1,75 @@
+#################################################
+# DO Community Playbooks: Initial Server Setup  #
+#################################################
+# https://www.digitalocean.com/community/tutorials/how-to-use-ansible-to-automate-initial-server-setup-on-ubuntu-18-04
+# modified for this GitHub repo
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/default.yml
+
+  tasks:
+
+  # Run apt update && apt upgrade
+    - name: sudo apt update && sudo apt upgrade 
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #one day
+  # Sudo Group Setup
+    - name: Make sure we have a 'wheel' group
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: '/usr/sbin/visudo -cf %s'
+
+  # User + Key Setup
+    - name: Create a new regular user with sudo privileges
+      user:
+        name: "{{ user_name }}"
+        state: present
+        groups: wheel
+        append: true
+        create_home: true
+        shell: /bin/bash
+
+    - name: Synchronize .ssh directories of root and non-root sudo user on the server
+      synchronize:
+        src: /root/.ssh
+        dest: /home/{{ user_name }}
+        archive: yes
+        rsync_opts:
+          - "--chown={{ user_name  }}:{{ user_name }}"
+      delegate_to: "{{ inventory_hostname }}"
+
+  # Disable root login using a password
+    - name: Disable password authentication for root
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        state: present
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin prohibit-password'
+
+  # Install Packages
+    - name: Install required system packages
+      apt: name={{ sys_packages }} state=latest
+
+  # UFW Setup
+    - name: UFW - Allow SSH connections
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: UFW - Deny all other incoming traffic by default
+      ufw:
+        state: enabled
+        policy: deny
+        direction: incoming

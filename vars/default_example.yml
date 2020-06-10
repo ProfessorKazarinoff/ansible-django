@@ -1,0 +1,8 @@
+# vars/default_example.yml
+# modify for each deployment
+---
+user_name: peter
+sys_packages: ['python-pip', 'python-dev', 'libpq-dev', 'postgresql', 'postgresql-contrib', 'nginx', 'curl', 'wget', 'vim', 'git', 'tree', 'ufw', 'whois']
+database_name: mydatabase
+database_user: django
+database_password: mypassword
