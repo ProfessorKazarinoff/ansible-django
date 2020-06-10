@@ -1,0 +1,55 @@
+# ssl.yml
+#
+# An Ansible playbook to create an SSL cirt
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/default.yml
+
+  tasks:
+  # Check if files already exhist on the server
+    - name: Check if fullchain.pem file exhists
+      stat: path=/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+      register: fullchain_path
+    - name: Check if privkey.pem files exhists
+      stat: path=/etc/letsencrypt/live/{{ domain_name }}/privkey.pem
+      register: privkey_path
+    - name: Check if the certbot has been downloaded
+      stat: path=/srv/django/proxy_auth_token
+      register: certbot_path
+ # Run apt update && apt upgrade
+    - name: sudo apt update && sudo apt upgrade
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #one day
+    - name: Install Certbot
+      apt:
+        name: certbot
+        state: present
+    - name: Install python3-certbot-nginx
+      apt:
+        name: python3-certbot-nginx
+        state: present
+    - name: Open port 80 so that certbot can do its work
+      ufw:
+        rule: allow
+        port: '80'
+      when: not privkey_path.stat.exists and not fullchain_path.stat.exists
+
+    - name: Run certbot on the domain name using provided email address
+      shell: certbot certonly -d {{ domain_name }} --nginx -n --agree-tos -m {{ email }}
+      args:
+        executable: /bin/bash
+      become: true
+      register: certbot_stdout
+      when: not privkey_path.stat.exists and not fullchain_path.stat.exists
+    - name: print out the certbot output
+      debug:
+        var: certbot_stdout.stdout_lines
+      when: certbot_stdout
+    - name: Close port 80 because cirtbot is done with its work
+      ufw:
+        rule: deny
+        port: '80'

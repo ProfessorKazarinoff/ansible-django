@@ -1,4 +1,4 @@
-# install_django.yml
+# install_gunicorn.yml
 ---
 - hosts: all
   become: true
@@ -12,8 +12,13 @@
         upgrade: yes
         update_cache: yes
         cache_valid_time: 86400 #one day
-    - name: git pull django project
-    - name: pip install /my_app/requirements.txt
-      pip:
-        requirements: /my_app/requirements.txt
-        virtualenv: /my_app/venv
+  # Ensure gunicorn is installed
+
+  # Copy gunicorn sock files
+
+  # Copy gunicorn systemd files
+
+  # Ensure gunicorn system service is enabled
+
+  # Ensure gunicorn system service is running
+  

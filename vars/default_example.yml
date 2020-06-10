@@ -6,3 +6,5 @@ sys_packages: ['python-pip', 'python-dev', 'libpq-dev', 'postgresql', 'postgresq
 database_name: mydatabase
 database_user: django
 database_password: mypassword
+django_superuser: peter
+domain_name: mydomain.org

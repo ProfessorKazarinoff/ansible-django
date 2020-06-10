@@ -1,0 +1,28 @@
+# install_django.yml
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/default.yml
+  tasks:
+
+  # Run apt update && apt upgrade
+    - name: sudo apt update && sudo apt upgrade 
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #one day
+  # Pull Django project down from GitHub
+    - name: git pull django project
+  # Create Virtual Env and install Python pacages
+    - name: pip install /my_app/requirements.txt
+      pip:
+        requirements: /my_app/requirements.txt
+        virtualenv: /my_app/venv
+  # Update Django project files for deployment
+
+  # Run Django collect static
+
+  # Run Django make migrations, migrate
+
+  # Run Django createsuperuser
