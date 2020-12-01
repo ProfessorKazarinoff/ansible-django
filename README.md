@@ -4,7 +4,7 @@ A repo of Ansible playbooks to deploy a Django web app on Digital Ocean.
 
 ## Create Droplet, link to domain name
 
-Create a Digital Ocean droplet. Link domain name to droplet IP address. The DNS changeover takes the longest, so do this first thing.
+Create a Digital Ocean droplet with Ubuntu 20.04. Link domain name to droplet IP address. The DNS changeover takes the longest, so do this first thing.
 
 ## Create virtual environment, install requirements.txt
 
