@@ -45,7 +45,7 @@ ansible-playbook -i hosts initial_server_setup.yml
 Use SSH to log into the server as the non-root sudo user.
 
 ```
-ssh peter@234.XXX.23.XX
+ssh peter@XXX.XXX.XX.XX
 ```
 
 ## Run the install django playbook

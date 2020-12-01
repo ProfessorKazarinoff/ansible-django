@@ -2,9 +2,13 @@
 # modify for each deployment
 ---
 user_name: peter
-sys_packages: ['python-pip', 'python-dev', 'libpq-dev', 'postgresql', 'postgresql-contrib', 'nginx', 'curl', 'wget', 'vim', 'git', 'tree', 'ufw', 'whois']
+sys_packages: ['nginx', 'curl', 'wget', 'vim', 'git', 'tree', 'ufw', 'whois','python3-virtualenv','python3-pip','python3-dev','libpq-dev']
+project_repo: https://github.com/user/repo.git
+app_name: myapp
+app_dir: "/home/{{ user_name }}/{{ app_name }}"
 database_name: mydatabase
 database_user: django
 database_password: mypassword
 django_superuser: peter
 domain_name: mydomain.org
+email_address: username@email.org

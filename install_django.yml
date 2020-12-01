@@ -12,13 +12,19 @@
         upgrade: yes
         update_cache: yes
         cache_valid_time: 86400 #one day
+  
   # Pull Django project down from GitHub
-    - name: git pull django project
-  # Create Virtual Env and install Python pacages
+    - name: git pull django project from GitHub
+      git:
+        repo: "{{ project_repo }}"
+        dest: "{{ app_dir }}"
+
+  # Create Virtual Env and install Python packages
     - name: pip install /my_app/requirements.txt
       pip:
-        requirements: /my_app/requirements.txt
-        virtualenv: /my_app/venv
+        requirements: "{{ app_dir }}/requirements.txt"
+        virtualenv: "{{ app_dir }}/venv"
+
   # Update Django project files for deployment
 
   # Run Django collect static
@@ -26,3 +32,4 @@
   # Run Django make migrations, migrate
 
   # Run Django createsuperuser
+  
