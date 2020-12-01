@@ -1,6 +1,6 @@
 # ansible-django
 
-A repo of Ansible playbooks to deploy a Django web app on Digital Ocean.
+A repo of Ansible playbooks to deploy a Django web app on Digital Ocean. The Django deployment uses gunicorn, nginx and an sqlite database.
 
 ## Create Droplet, link to domain name
 
@@ -52,4 +52,10 @@ ssh peter@XXX.XXX.XX.XX
 
 ```
 ansible-playbook -i hosts install_django.yml
+```
+
+## Run the install gunicorn playbook
+
+```
+ansible-playbook -i hosts install_gunicorn.yml
 ```

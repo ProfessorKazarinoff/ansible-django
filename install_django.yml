@@ -25,11 +25,8 @@
         requirements: "{{ app_dir }}/requirements.txt"
         virtualenv: "{{ app_dir }}/venv"
 
-  # Update Django project files for deployment
+  # Run Django collectstatic
 
-  # Run Django collect static
-
-  # Run Django make migrations, migrate
+  # Run Django makemigrations, migrate
 
   # Run Django createsuperuser
-  
