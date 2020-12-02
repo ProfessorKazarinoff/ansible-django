@@ -8,22 +8,21 @@
     - vars/default.yml
 
   tasks:
-  # Check if files already exhist on the server
+  # Check if the SSL key files already exhist on the server
     - name: Check if fullchain.pem file exhists
       stat: path=/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
       register: fullchain_path
     - name: Check if privkey.pem files exhists
       stat: path=/etc/letsencrypt/live/{{ domain_name }}/privkey.pem
       register: privkey_path
-    - name: Check if the certbot has been downloaded
-      stat: path=/srv/django/proxy_auth_token
-      register: certbot_path
- # Run apt update && apt upgrade
+ 
+  # Run apt update && apt upgrade
     - name: sudo apt update && sudo apt upgrade
       apt:
         upgrade: yes
         update_cache: yes
         cache_valid_time: 86400 #one day
+  # Install Certbot or Ensure Certbot is intalled
     - name: Install Certbot
       apt:
         name: certbot
@@ -32,12 +31,13 @@
       apt:
         name: python3-certbot-nginx
         state: present
+  # Open Port 80 so that certbot can call out over the internet
     - name: Open port 80 so that certbot can do its work
       ufw:
         rule: allow
         port: '80'
       when: not privkey_path.stat.exists and not fullchain_path.stat.exists
-
+  # Run Certbot
     - name: Run certbot on the domain name using provided email address
       shell: certbot certonly -d {{ domain_name }} --nginx -n --agree-tos -m {{ email }}
       args:
@@ -49,7 +49,13 @@
       debug:
         var: certbot_stdout.stdout_lines
       when: certbot_stdout
+
+  # Close Port 80 because cirtbot is done
     - name: Close port 80 because cirtbot is done with its work
       ufw:
         rule: deny
         port: '80'
+
+  # Update Nginx config to use SSL and the domain name
+
+  # Restart Nginx

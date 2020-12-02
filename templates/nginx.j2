@@ -3,9 +3,6 @@ server {
     server_name {{ server_IP }};
 
     location = /favicon.ico { access_log off; log_not_found off; }
-    location /static/ {
-        root {{ app_dir }};
-    }
 
     location / {
         include proxy_params;

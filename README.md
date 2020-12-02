@@ -1,6 +1,6 @@
 # ansible-django
 
-A repo of Ansible playbooks to deploy a Django web app on Digital Ocean. The Django deployment uses gunicorn, nginx and an sqlite database.
+A repo of Ansible playbooks to deploy a Django web app on Digital Ocean. The Django deployment uses gunicorn, nginx and an sqlite database. Assumed that static files are hosted by Django using whitenoise. Static files are not served by nginx.
 
 ## Create Droplet, link to domain name
 
