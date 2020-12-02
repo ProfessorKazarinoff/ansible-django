@@ -1,6 +1,7 @@
 # ssl.yml
 #
 # An Ansible playbook to create an SSL cirt
+# uses instructions from https://certbot.eff.org/lets-encrypt/ubuntufocal-nginx
 ---
 - hosts: all
   become: true
@@ -22,24 +23,43 @@
         upgrade: yes
         update_cache: yes
         cache_valid_time: 86400 #one day
-  # Install Certbot or Ensure Certbot is intalled
-    - name: Install Certbot
+  
+  # Make sure apt version of certbot isn't installed (we are going to use snap instead)
+    - name: uninstall apt version of certbot
       apt:
         name: certbot
+        state: absent
+
+  # Ensure the version of snapd is up to date
+    - name: Ensure snapd core is up to date
+      community.general.snap:
+        name: core
         state: present
-    - name: Install python3-certbot-nginx
-      apt:
-        name: python3-certbot-nginx
+
+  # Install Certbot with snap
+    - name: Install Certbot with snap
+      community.general.snap:
+        name: certbot
         state: present
+        classic: yes
+
+  # Simlink the snap certbot to /usr/bin/certbot
+    - name: create symlink from /snap/bin/certbot to /usr/bin/certbot
+      file:
+        src: /snap/bin/certbot
+        dest: /usr/bin/certbot
+        state: link
+
   # Open Port 80 so that certbot can call out over the internet
     - name: Open port 80 so that certbot can do its work
       ufw:
         rule: allow
         port: '80'
       when: not privkey_path.stat.exists and not fullchain_path.stat.exists
+  
   # Run Certbot
     - name: Run certbot on the domain name using provided email address
-      shell: certbot certonly -d {{ domain_name }} --nginx -n --agree-tos -m {{ email }}
+      shell: certbot -d {{ domain_name }} --nginx -n --agree-tos -m {{ email }}
       args:
         executable: /bin/bash
       become: true
@@ -50,12 +70,19 @@
         var: certbot_stdout.stdout_lines
       when: certbot_stdout
 
-  # Close Port 80 because cirtbot is done
+  # Close Port 80 because Certbot is done
     - name: Close port 80 because cirtbot is done with its work
       ufw:
         rule: deny
         port: '80'
 
   # Update Nginx config to use SSL and the domain name
+  # This might not be needed if certbot does it for us
+  
+  # Might have to change the permissions on the key files so nginx can read them
 
-  # Restart Nginx
+  # Restart nginx
+    - name: Restart the nginx systemd service
+      systemd:
+        state: restarted
+        name: nginx
