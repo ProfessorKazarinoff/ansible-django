@@ -48,7 +48,7 @@ Use SSH to log into the server as the non-root sudo user.
 ssh peter@XXX.XXX.XX.XX
 ```
 
-## Run the install django playbook
+## Run the django playbook
 
 ```
 ansible-playbook -i hosts django.yml
