@@ -39,7 +39,7 @@
         state: directory
         recurse: yes
         group: wheel
-        mode: '0770'
+        mode: '0775'
 
   # Run Django collectstatic
     - name: Run manage.py collectstatic

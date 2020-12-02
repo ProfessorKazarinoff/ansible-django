@@ -1,0 +1,48 @@
+# install_nginx.yml
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/default.yml
+  tasks:
+
+  # Run apt update && apt upgrade
+    - name: sudo apt update && sudo apt upgrade 
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #one day
+  # Ensure nginx is installed
+    - name: Ensure Nginx is installed
+      apt: name=nginx
+    
+  # Copy nginx config files
+    - name: copy nginx config file to /etc/nginx/sites-available/myproject
+      template:
+        src: templates/nginx.j2
+        dest: "/etc/nginx/sites-available/{{ app_name }}"
+  
+  # Simlink sites-available to sites-enabled
+    - name: create symlink from site-available to sites-enabled
+      file:
+        src: "/etc/nginx/sites-available/{{ app_name }}"
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+
+  # restart nginx
+    - name: Restart the nginx systemd service is running
+      systemd:
+        state: restarted
+        name: nginx
+
+  # Close port 8000 on the ufw firewall
+    - name: Make sure port 8000 is closed on the ufw firewall
+      community.general.ufw:
+        rule: deny
+        port: '8000'
+  
+  # Allow nginx through the ufw firewall
+    - name: Let the ufw firewall allow the Nginx Full profile through
+      community.general.ufw:
+        rule: allow
+        name: Nginx Full

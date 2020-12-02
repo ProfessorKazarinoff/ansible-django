@@ -39,7 +39,7 @@ If this is the first time communicating with the server, it will ask you to veri
 If this doesn't work. Try to log into the server with SSH. May need to remove a known host ```ssh-keygen -f "/home/peter/.ssh/known_hosts" -R "XX.XXXX.XX"```
 
 ```
-ansible-playbook -i hosts initial_server_setup.yml
+ansible-playbook -i hosts server.yml
 ```
 
 Use SSH to log into the server as the non-root sudo user.
@@ -51,7 +51,7 @@ ssh peter@XXX.XXX.XX.XX
 ## Run the install django playbook
 
 ```
-ansible-playbook -i hosts install_django.yml
+ansible-playbook -i hosts django.yml
 ```
 
 Now you can test the Django app using Django's built-in server. Log into the server change into your app's directory and start the development server. Don't forget to open the ufw firewall to open port 8000.
@@ -66,8 +66,14 @@ python manage.py runserver 0.0.0.0:8000
 sudo ufw deny 8000
 ```
 
-## Run the install gunicorn playbook
+## Run the gunicorn playbook
 
 ```
-ansible-playbook -i hosts install_gunicorn.yml
+ansible-playbook -i hosts gunicorn.yml
+```
+
+## Run the nginx playbook
+
+```
+ansible-playbook -i hosts nginx.yml
 ```
