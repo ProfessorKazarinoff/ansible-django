@@ -54,6 +54,18 @@ ssh peter@XXX.XXX.XX.XX
 ansible-playbook -i hosts install_django.yml
 ```
 
+Now you can test the Django app using Django's built-in server. Log into the server change into your app's directory and start the development server. Don't forget to open the ufw firewall to open port 8000.
+
+```
+ssh peter@XXX.XXX.XXXX
+cd app-dir
+source venv/bin/activate
+sudo ufw allow 8000
+python manage.py runserver 0.0.0.0:8000
+# browse to https://XXX.XXX.XXXX:8000
+sudo ufw deny 8000
+```
+
 ## Run the install gunicorn playbook
 
 ```

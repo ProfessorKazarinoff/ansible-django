@@ -39,7 +39,3 @@
       systemd:
         state: started
         name: gunicorn.socket
-    - name: Start/Make sure the gunicorn systemd service is running
-      systemd:
-        state: started
-        name: gunicorn

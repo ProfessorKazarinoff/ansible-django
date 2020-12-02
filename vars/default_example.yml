@@ -5,11 +5,11 @@ user_name: peter
 sys_packages: ['nginx', 'curl', 'wget', 'vim', 'git', 'tree', 'ufw', 'whois','python3-virtualenv','python3-pip','python3-dev','libpq-dev']
 project_repo: https://github.com/user/repo.git
 app_name: my-app
-django_project_name: my-django-project
+django_project_name: my_django_project
 app_dir: "/home/{{ user_name }}/{{ app_name }}"
-django_secret_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-server_IP: XXX.XXX.XXX.XXX
-fixture_path: /home/user/app-dir/app/fixtures/data.json
+django_secret_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+server_IP: XXX.XXX.XXX.XX
+fixture_path: /home/user/app-dir/djano-app/fixtures/data.json
 django_superuser: peter
 domain_name: mydomain.org
 email_address: first.last@mail.com
