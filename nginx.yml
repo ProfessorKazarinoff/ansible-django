@@ -20,13 +20,13 @@
     - name: copy nginx config file to /etc/nginx/sites-available/myproject
       template:
         src: templates/nginx.j2
-        dest: "/etc/nginx/sites-available/{{ app_name }}"
+        dest: "/etc/nginx/sites-available/{{ domain_name }}"
   
   # Simlink sites-available to sites-enabled
     - name: create symlink from site-available to sites-enabled
       file:
-        src: "/etc/nginx/sites-available/{{ app_name }}"
-        dest: /etc/nginx/sites-enabled/default
+        src: "/etc/nginx/sites-available/{{ domain_name }}"
+        dest: /etc/nginx/sites-enabled/
         state: link
 
   # restart nginx
@@ -41,7 +41,7 @@
         rule: deny
         port: '8000'
   
-  # Allow nginx through the ufw firewall
+  # Allow Nginx through the ufw firewall
     - name: Let the ufw firewall allow the Nginx Full profile through
       community.general.ufw:
         rule: allow

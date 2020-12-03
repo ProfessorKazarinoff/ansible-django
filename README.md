@@ -77,3 +77,11 @@ ansible-playbook -i hosts gunicorn.yml
 ```
 ansible-playbook -i hosts nginx.yml
 ```
+
+## Run the ssl playbook
+
+Ensure that the DNS record went through. Can check the domain name on: https://www.whatsmydns.net/
+
+```
+ansible-playbook -i hosts ssl.yml
+```

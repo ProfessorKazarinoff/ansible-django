@@ -13,4 +13,4 @@ fixture_path: /home/user/app-dir/djano-app/fixtures/data.json
 django_superuser: peter
 django_superuser_password: 239ut-0u9g9-qse0wow-0o-ero-o-78989897et4y9wf0f
 domain_name: mydomain.org
-email_address: peter.kazarinoff@gmail.com
+email: peter.kazarinoff@gmail.com

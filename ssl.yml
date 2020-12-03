@@ -1,6 +1,6 @@
 # ssl.yml
 #
-# An Ansible playbook to create an SSL cirt
+# An Ansible playbook to create an SSL cirt using certbot
 # uses instructions from https://certbot.eff.org/lets-encrypt/ubuntufocal-nginx
 ---
 - hosts: all
@@ -24,42 +24,43 @@
         update_cache: yes
         cache_valid_time: 86400 #one day
   
-  # Make sure apt version of certbot isn't installed (we are going to use snap instead)
-    - name: uninstall apt version of certbot
+  # Install certbot and the certbot nginx extension with apt
+    - name: Install certbot and the certbot nginx extension with apt
       apt:
-        name: certbot
-        state: absent
-
-  # Ensure the version of snapd is up to date
-    - name: Ensure snapd core is up to date
-      community.general.snap:
-        name: core
+        name:
+        - certbot
+        - python3-certbot-nginx
         state: present
 
-  # Install Certbot with snap
-    - name: Install Certbot with snap
-      community.general.snap:
-        name: certbot
-        state: present
-        classic: yes
-
-  # Simlink the snap certbot to /usr/bin/certbot
-    - name: create symlink from /snap/bin/certbot to /usr/bin/certbot
-      file:
-        src: /snap/bin/certbot
-        dest: /usr/bin/certbot
-        state: link
-
-  # Open Port 80 so that certbot can call out over the internet
-    - name: Open port 80 so that certbot can do its work
-      ufw:
-        rule: allow
-        port: '80'
+  # Copy nginx config file will ssl included
+    - name: copy nginx config file to /etc/nginx/sites-available/mydomain.org
+      template:
+        src: templates/nginx_ssl.j2
+        dest: "/etc/nginx/sites-available/{{ domain_name }}"
       when: not privkey_path.stat.exists and not fullchain_path.stat.exists
-  
+  # Simlink sites-available to sites-enabled
+    - name: create symlink from site-available to sites-enabled
+      file:
+        src: "/etc/nginx/sites-available/{{ domain_name }}"
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+      when: not privkey_path.stat.exists and not fullchain_path.stat.exists
+
+  # Allow Nginx Full progile through the ufw firewall
+    - name: Let the ufw firewall allow the Nginx Full profile through
+      community.general.ufw:
+        rule: allow
+        name: Nginx Full
+
+  # Block Nginx http with the ufw firewall
+    - name: ufw firewall prevents Nginx HPPT profile through
+      community.general.ufw:
+        rule: deny
+        name: Nginx HTTP
+
   # Run Certbot
     - name: Run certbot on the domain name using provided email address
-      shell: certbot -d {{ domain_name }} --nginx -n --agree-tos -m {{ email }}
+      shell: certbot -d {{ domain_name }} -d www.{{ domain_name }} --nginx -n --agree-tos -m {{ email }}
       args:
         executable: /bin/bash
       become: true
@@ -70,16 +71,9 @@
         var: certbot_stdout.stdout_lines
       when: certbot_stdout
 
-  # Close Port 80 because Certbot is done
-    - name: Close port 80 because cirtbot is done with its work
-      ufw:
-        rule: deny
-        port: '80'
-
-  # Update Nginx config to use SSL and the domain name
-  # This might not be needed if certbot does it for us
-  
   # Might have to change the permissions on the key files so nginx can read them
+  # Consider templating in a file for sites-enabled that includes the post certbot stuff, but also includes
+  # http --> https redirect.
 
   # Restart nginx
     - name: Restart the nginx systemd service
