@@ -26,7 +26,7 @@
     - name: create symlink from site-available to sites-enabled
       file:
         src: "/etc/nginx/sites-available/{{ domain_name }}"
-        dest: /etc/nginx/sites-enabled/
+        dest: /etc/nginx/sites-enabled/default
         state: link
 
   # restart nginx
