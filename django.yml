@@ -75,4 +75,4 @@
         path: "{{ app_dir }}/{{ django_project_name }}/settings.py"
         state: present
         regexp: '^ALLOWED_HOSTS = '
-        line: "ALLOWED_HOSTS = ['{{ server_IP }}']"
+        line: "ALLOWED_HOSTS = ['{{ server_IP }}','{{ domain_name }}']"
